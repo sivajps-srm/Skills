@@ -54,11 +54,12 @@ export default defineConfig(async () => {
     plugins: [
       vinext(),
       sites(),
-      cloudflare({
-        viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
-        inspectorPort: false,
-        config: localBindingConfig,
-      }),
+    cloudflare({
+  configPath: "./wrangler.jsonc",
+  viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
+  inspectorPort: false,
+  config: localBindingConfig,
+}),
     ],
   };
 });
