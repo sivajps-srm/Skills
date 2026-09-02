@@ -1,0 +1,16 @@
+"use client";
+import { useEffect,useState } from "react";
+import FacilitatorResponses from "./responses";import TriadManager from "./triad-manager";import ClassroomDeck from "./classroom-deck";
+type SessionRow={code:string;name:string;learner_code:string;pulse_open:number;workbook_open:number;cards_open:number;roleplay_open:number;case_open:number;finish_open:number;deck_open:number;deck_slide:number};
+const activities=[{key:"pulse",label:"Live Pulse"},{key:"workbook",label:"Workbook"},{key:"cards",label:"Discovery Cards"},{key:"roleplay",label:"Role Play"},{key:"case",label:"Case Lab"},{key:"finish",label:"Reflection & Feedback"}];
+export default function FacilitatorDashboard(){
+  const [sessions,setSessions]=useState<SessionRow[]>([]);const [selected,setSelected]=useState("");const [name,setName]=useState("");const [message,setMessage]=useState("");
+  async function load(prefer?:string){const r=await fetch("/api/sessions");const d=await r.json() as {sessions?:SessionRow[]};const list=d.sessions??[];setSessions(list);setSelected(current=>prefer||current||list[0]?.code||"")}
+  useEffect(()=>{load()},[]);const current=sessions.find(s=>s.code===selected);
+  async function create(){if(!name.trim())return;setMessage("Creating session…");const r=await fetch("/api/sessions",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({name})});const d=await r.json() as {session?:SessionRow;error?:string};if(d.session){setName("");setMessage("Session created ✓");await load(d.session.code)}else setMessage(d.error??"Could not create session.")}
+  async function toggle(key:string,open:boolean){await fetch("/api/sessions",{method:"PATCH",headers:{"content-type":"application/json"},body:JSON.stringify({sessionCode:selected,activity:key,open})});await load(selected)}
+  return <>{<section className="session-console"><div className="session-head"><div><p className="eyebrow">COHORT & SESSION CONTROL</p><h2>{current?.name||"Loading session…"}</h2><select value={selected} onChange={e=>setSelected(e.target.value)}>{sessions.map(s=><option key={s.code} value={s.code}>{s.name} · {s.code}</option>)}</select></div>{current&&<aside><span>LEARNER ACCESS CODE</span><strong>{current.learner_code}</strong><button onClick={()=>navigator.clipboard?.writeText(current.learner_code)}>Copy code</button></aside>}</div>
+    <div className="create-session"><input value={name} onChange={e=>setName(e.target.value)} placeholder="New cohort or session name"/><button onClick={create} disabled={!name.trim()}>Create separate session +</button>{message&&<span>{message}</span>}</div>
+    {current&&<div className="activity-controls">{activities.map(a=>{const open=Boolean(current[`${a.key}_open` as keyof SessionRow]);return <article key={a.key}><div><b>{a.label}</b><small>{open?"Open to learners":"Locked"}</small></div><button className={open?"open":"locked"} onClick={()=>toggle(a.key,!open)}>{open?"Lock":"Release"}</button></article>})}</div>}</section>}
+    {selected&&current&&<><ClassroomDeck sessionCode={selected} deckOpen={Boolean(current.deck_open)} current={Number(current.deck_slide)||0} onUpdated={()=>load(selected)}/><TriadManager sessionCode={selected}/><FacilitatorResponses sessionCode={selected}/></>}</>
+}

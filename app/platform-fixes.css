@@ -1,0 +1,1 @@
+@media(max-width:650px){.facts-row{display:grid;grid-template-columns:1fr 1fr}.facts-row b{grid-column:1/-1}.role-claim{grid-template-columns:1fr}.triad-status{align-items:flex-start;flex-direction:column;gap:5px}.triad-status small{margin-left:0}.feedback-form{grid-template-columns:1fr}.feedback-form label:first-child{grid-column:auto}}

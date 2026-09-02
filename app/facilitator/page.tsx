@@ -1,0 +1,4 @@
+import { readSession } from "../lib/auth";
+import FacilitatorDashboard from "./dashboard";
+export const dynamic="force-dynamic";
+export default async function Facilitator(){const s=await readSession();if(s?.role!=="facilitator")return <main className="access-denied"><h1>Facilitator access required</h1><a href="/login/facilitator">Sign in →</a></main>;return <main className="hub facilitator-hub"><header><div><p>FACILITATOR HUB</p><h1>Sales Transition Lab</h1></div><a href="/">Exit hub</a></header><section className="hub-stats"><article><strong>7</strong><span>connected learning channels</span></article><article><strong>17</strong><span>facilitated classroom slides</span></article><article><strong>Live</strong><span>learner follow-along</span></article></section><FacilitatorDashboard/></main>}
