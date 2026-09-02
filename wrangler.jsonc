@@ -1,0 +1,13 @@
+{
+  "name": "skills4sales",
+  "main": "./worker/index.ts",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "site-creator-d1",
+      "database_id": "20f6d357-e727-44fb-b402-ca2b1c17891b",
+      "migrations_dir": "drizzle"
+    }
+  ]
+}
